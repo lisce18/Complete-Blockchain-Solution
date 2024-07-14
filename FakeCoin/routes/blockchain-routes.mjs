@@ -1,8 +1,9 @@
 import express from 'express';
-import { listBlock } from '../controllers/blockchain-controller.mjs';
+import { listChain } from '../controllers/blockchain-controller.mjs';
+import { protect } from '../middlewear/authorization.mjs';
 
-const router = express();
+const router = express.Router();
 
-router.route('/').get(listBlock);
+router.get('/', protect, listChain);
 
 export default router;

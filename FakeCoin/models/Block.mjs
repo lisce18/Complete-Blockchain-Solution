@@ -1,56 +1,53 @@
 import hexToBinary from 'hex-to-binary';
-import { GENESIS_DATA, MINE_RATE } from '../config/settings.mjs';
+import { GENESIS_DATA } from '../config/settings.mjs';
 import { createHash } from '../utilities/crypto-lib.mjs';
+
+const mineRate = parseInt(process.env.MINE_RATE);
 
 export default class Block {
   constructor({ timestamp, lastHash, hash, payload, nonce, difficulty }) {
-    Object.assign(this, {
-      timestamp,
-      lastHash,
-      hash,
-      payload,
-      nonce,
-      difficulty,
-    });
+    this.timestamp = timestamp;
+    this.lastHash = lastHash;
+    this.hash = hash;
+    this.payload = payload;
+    this.nonce = nonce;
+    this.difficulty = difficulty;
   }
 
-  static get genesisBlock() {
+  // Getter... = property...
+  static createGenesis() {
     return new this(GENESIS_DATA);
   }
 
   static mineBlock({ lastBlock, payload }) {
-    let { difficulty } = lastBlock;
     let hash, timestamp;
-    let nonce = 0;
-    const lastHash = lastBlock.hash;
+    let lastHash = lastBlock.hash;
+    let nonce = 512;
+    let { difficulty } = lastBlock;
 
     do {
       nonce++;
       timestamp = Date.now();
-      difficulty = Block.adjustDifficulty({
-        previousBlock: lastBlock,
-        timestamp,
-      });
-      hash = createHash(timestamp, lastHash, payload, nonce, difficulty);
+      difficulty = Block.adjustDifficultyLevel(lastBlock, timestamp);
+      const stringToHash = timestamp
+        .toString()
+        .concat(lastHash, JSON.stringify(payload), nonce, difficulty);
+
+      hash = createHash(stringToHash);
     } while (
       hexToBinary(hash).substring(0, difficulty) !== '0'.repeat(difficulty)
     );
 
-    return new this({
-      timestamp,
-      lastHash,
-      hash,
-      payload,
-      nonce,
-      difficulty,
-    });
+    return new this({ timestamp, lastHash, hash, payload, nonce, difficulty });
   }
 
-  static adjustDifficulty({ previousBlock, timestamp }) {
-    const { difficulty } = previousBlock;
+  static adjustDifficultyLevel(lastBlock, currentTimestamp) {
+    let { difficulty } = lastBlock;
+    let { timestamp } = lastBlock;
+    const elapsedTime = currentTimestamp - timestamp;
 
-    if (timestamp - previousBlock.timestamp > MINE_RATE) return difficulty - 1;
+    if (difficulty < 1) return 1;
 
-    return difficulty + 1;
+    return elapsedTime > mineRate ? +difficulty - 1 : +difficulty + 1;
   }
 }

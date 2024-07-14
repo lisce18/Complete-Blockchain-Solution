@@ -5,8 +5,12 @@ import {
   wallet,
 } from '../server.mjs';
 import Miner from '../models/Miner.mjs';
+// import TransactionModel from '../models/TransactionModel.mjs';
 import Wallet from '../models/Wallet.mjs';
 
+// @desc Make a transaction
+// @route POST api/v1/wallet/transaction
+// access PRIVATE
 export const addTransaction = (req, res, next) => {
   const { amount, recipient } = req.body;
 
@@ -14,16 +18,14 @@ export const addTransaction = (req, res, next) => {
     address: wallet.publicKey,
   });
 
-  try {
-    if (transaction) {
-      transaction.update({ sender: wallet, recipient: amount });
-    } else {
-      transaction = wallet.createTransaction({ recipient, amount });
-    }
-  } catch (error) {
-    return res
-      .status(400)
-      .json({ success: false, statusCode: 400, error: error.message });
+  if (transaction) {
+    transaction.update({ sender: wallet, recipient, amount });
+  } else {
+    transaction = wallet.createTransaction({
+      recipient,
+      amount,
+      chain: blockchain.chain,
+    });
   }
 
   transactionPool.addTransaction(transaction);
@@ -34,23 +36,37 @@ export const addTransaction = (req, res, next) => {
     .json({ success: true, statusCode: 201, payload: transaction });
 };
 
-export const getBalance = (req, res, next) => {
-  const address = wallet.publicKey;
-  const balance = Wallet.calculateBalance({ chain: blockchain, address });
-
-  res
-    .status(200)
-    .json({ success: true, statuscode: 200, payload: { address, balance } });
-};
-
+// @desc List the pending transactions yet to be added to a block
+// @route POST api/v1/wallet/transactions
+// access PRIVATE
 export const getTransactionPool = (req, res, next) => {
   res.status(200).json({
     success: true,
     statusCode: 200,
-    paload: transactionPool.transactionMap,
+    payload: transactionPool.transactionMap,
   });
 };
 
+// @desc See the current wallets information
+// @route GET api/v1/wallet/info
+// access PRIVATE
+export const getWalletBalance = (req, res, next) => {
+  const address = wallet.publicKey;
+  const balance = Wallet.calculateBalance({
+    chain: blockchain.chain,
+    address,
+  });
+
+  res.status(200).json({
+    success: true,
+    statusCode: 200,
+    payload: { address, balance },
+  });
+};
+
+// @desc Mine transactions
+// @route GET api/v1/wallet/mine
+// access PRIVATE
 export const mineTransactions = (req, res, next) => {
   const miner = new Miner({
     blockchain,
@@ -59,7 +75,11 @@ export const mineTransactions = (req, res, next) => {
     pubsub: pubnubServer,
   });
 
-  miner.mineTransactions();
+  const minedTransaction = miner.mineTransaction();
 
-  res.status(200).json({ success: true, statusCode: 200, payload: 'Success' });
+  res.status(200).json({
+    success: true,
+    statusCode: 200,
+    payload: minedTransaction,
+  });
 };

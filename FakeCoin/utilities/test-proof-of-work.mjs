@@ -3,7 +3,7 @@ import Blockchain from '../models/Blockchain.mjs';
 
 const blockchain = new Blockchain();
 
-blockchain.addBlock({ payload: 'test-block' });
+blockchain.addBlock({ payload: 'test' });
 let hash = blockchain.chain.at(-1).hash;
 
 let prevTime, nextTime, nextBlock, timeDiff, average;
@@ -12,7 +12,7 @@ const times = [];
 
 for (let i = 0; i < 10000; i++) {
   prevTime = blockchain.chain.at(-1).timestamp;
-  blockchain.addBlock({ payload: `Block: ${i}` });
+  blockchain.addBlock({ payload: `block: ${i}` });
 
   nextBlock = blockchain.chain.at(-1);
   nextTime = nextBlock.timestamp;

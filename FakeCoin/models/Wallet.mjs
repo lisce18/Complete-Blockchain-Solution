@@ -1,5 +1,5 @@
+import { createHash, ellipticHash } from '../utilities/crypto-lib.mjs';
 import { INITIAL_BALANCE } from '../config/settings.mjs';
-import { ellipticHash, createHash } from '../utilities/crypto-lib.mjs';
 import Transaction from './Transaction.mjs';
 
 export default class Wallet {

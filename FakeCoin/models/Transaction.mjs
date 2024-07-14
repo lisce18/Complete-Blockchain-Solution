@@ -1,19 +1,20 @@
-import { v4 as uuidv4 } from 'uuid';
+import { v4 as uuid } from 'uuid';
 import { verifySignature } from '../utilities/crypto-lib.mjs';
 import { REWARD_ADDRESS, MINING_REWARD } from '../config/settings.mjs';
 
 export default class Transaction {
-  constructor({ sender, recipient, amount, inputMap, outputMap }) {
-    this.id = uuidv4().replaceAll('-', '');
-    this.outputMap = outputMap || this.createMap({ sender, recipient, amount });
+  constructor({ sender, recipient, amount, input, output }) {
+    this.id = uuid().replaceAll('-', '');
+    this.outputMap =
+      output || this.createOutputMap({ sender, recipient, amount });
     this.inputMap =
-      inputMap || this.createInputMap({ sender, outputMap: this.outputMap });
+      input || this.createInputMap({ sender, outputMap: this.outputMap });
   }
 
   static transactionReward({ miner }) {
     return new this({
-      inputMap: REWARD_ADDRESS,
-      outputMap: { [miner.publicKey]: MINING_REWARD },
+      input: REWARD_ADDRESS,
+      output: { [miner.publicKey]: MINING_REWARD },
     });
   }
 
@@ -23,9 +24,13 @@ export default class Transaction {
       outputMap,
     } = transaction;
 
-    const outputTotal = Object.values(outputMap).reduce(
-      (total, amount) => total + amount
-    );
+    const valueArray = Object.values(outputMap);
+
+    const valueArrayNumber = valueArray.map((a) => parseInt(a));
+
+    const outputTotal = valueArrayNumber.reduce((total, amount) => {
+      return total + amount;
+    });
 
     if (amount !== outputTotal) return false;
 
@@ -35,25 +40,8 @@ export default class Transaction {
     return true;
   }
 
-  update({ sender, recipient, amount }) {
-    if (amount > this.outputMap[sender.publicKey])
-      throw new Error('Not enough funds!');
-
-    if (!this.outputMap[recipient]) {
-      this.outputMap[recipient] = amount;
-    } else {
-      this.outputMap[recipient] = this.outputMap[recipient] + amount;
-    }
-
-    this.outputMap[sender.publicKey] =
-      this.outputMap[sender.publicKey] - amount;
-
-    this.inputMap = this.createInputMap({ sender, outputMap: this.outputMap });
-  }
-
-  createMap({ sender, recipient, amount }) {
+  createOutputMap({ sender, recipient, amount }) {
     const outputMap = {};
-
     outputMap[recipient] = amount;
     outputMap[sender.publicKey] = sender.balance - amount;
 
@@ -67,5 +55,22 @@ export default class Transaction {
       address: sender.publicKey,
       signature: sender.sign(outputMap),
     };
+  }
+
+  update({ sender, recipient, amount }) {
+    if (amount > this.outputMap[sender.publicKey])
+      throw new Error('Not enough funds!');
+
+    if (!this.outputMap[recipient]) {
+      this.outputMap[recipient] = amount;
+    } else {
+      this.outputMap[recipient] =
+        Number(this.outputMap[recipient]) + Number(amount);
+    }
+
+    this.outputMap[sender.publicKey] =
+      this.outputMap[sender.publicKey] - amount;
+
+    this.inputMap = this.createInputMap({ sender, outputMap: this.outputMap });
   }
 }

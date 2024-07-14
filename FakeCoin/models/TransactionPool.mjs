@@ -38,10 +38,9 @@ export default class TransactionPool {
   }
 
   validateTransactions() {
-    const validateTransactions = Object.values(this.transactionMap).filter(
+    const validTransactions = Object.values(this.transactionMap).filter(
       (transaction) => Transaction.validate(transaction)
     );
-
-    return validateTransactions;
+    return validTransactions;
   }
 }
