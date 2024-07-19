@@ -14,10 +14,10 @@ export const Navbar = () => {
         </li>
         <li>
           <NavLink
-            to={'/fakechain/transact'}
+            to={'/fakechain/transaction'}
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            Transact
+            Transaction
           </NavLink>
         </li>
         <li>

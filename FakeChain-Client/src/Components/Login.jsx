@@ -155,20 +155,20 @@ export const Login = ({
                 ></input>
               </div>
               <div className='form-control'>
-                <label htmlFor='signup-input-fname'>First name:</label>
+                <label htmlFor='signup-input-username'>Username:</label>
                 <input
                   type='text'
-                  id='signup-input-fname'
-                  name='fname'
+                  id='signup-input-username'
+                  name='username'
                   onChange={handleChangeSignup}
                   autoComplete='off'
                 ></input>
               </div>
               <div className='form-control'>
-                <label htmlFor='signup-input-lname'>Last name:</label>
+                <label htmlFor='signup-input-name'>Name:</label>
                 <input
                   type='text'
-                  id='signup-input-lname'
+                  id='signup-input-name'
                   name='lname'
                   onChange={handleChangeSignup}
                   autoComplete='off'

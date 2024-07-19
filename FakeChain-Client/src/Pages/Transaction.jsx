@@ -5,9 +5,9 @@ import { Popup } from '../Components/Popup';
 import { IconSquareChevronRight } from '@tabler/icons-react';
 
 export const Transaction = () => {
-  const [tx, setTx] = useState({ recipient: '', amount: '' });
-  const [txInput, setTxInput] = useState('');
-  const [txReceipt, setTxReceipt] = useState('');
+  const [trx, setTrx] = useState({ recipient: '', amount: '' });
+  const [trxInput, setTrxInput] = useState('');
+  const [trxReceipt, setTrxReceipt] = useState('');
   const [displayPopup, setDisplayPopup] = useState('');
   const [senderAddress, setSenderAddress] = useState(null);
   const [senderBalance, setSenderBalance] = useState(null);
@@ -33,7 +33,7 @@ export const Transaction = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setTx((prev) => ({ ...prev, [name]: value }));
+    setTrx((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e) => {
@@ -47,33 +47,36 @@ export const Transaction = () => {
       });
     }
 
-    if (tx.recipient === (undefined || '') || tx.amount === (undefined || '')) {
+    if (
+      trx.recipient === (undefined || '') ||
+      trx.amount === (undefined || '')
+    ) {
       return setDisplayPopup({
         title: 'Error',
         text: 'Input field(s) can not be empty.',
       });
     }
 
-    const response = await sendTransaction(tx, token);
+    const response = await sendTransaction(trx, token);
 
     if (response.statusCode === 201) {
-      setTxReceipt(response.payload);
-      setTxInput(tx);
-      setTx({ recipient: '', amount: '' });
+      setTrxReceipt(response.payload);
+      setTrxInput(trx);
+      setTrx({ recipient: '', amount: '' });
     } else {
       return setDisplayPopup({ title: 'Error', text: response.error });
     }
   };
 
   const formatOutputMap = (payload) => {
-    if (txReceipt) {
-      const senderAddress = txReceipt.inputMap.address;
+    if (trxReceipt) {
+      const senderAddress = trxReceipt.inputMap.address;
       const senderBalance = payload[senderAddress];
       return (
         <>
-          <div>Recipient: {txInput.recipient}</div>
-          <div>Amount to be recieved: {txInput.amount}</div>
-          <div>Sender: {shortenKey(txReceipt.inputMap.address)}</div>
+          <div>Recipient: {trxInput.recipient}</div>
+          <div>Amount to be recieved: {trxInput.amount}</div>
+          <div>Sender: {shortenKey(trxReceipt.inputMap.address)}</div>
           <div>Sender remaining balance: {senderBalance}</div>
         </>
       );
@@ -102,23 +105,23 @@ export const Transaction = () => {
         </div>
         <form onSubmit={handleSubmit}>
           <div className='form-control'>
-            <label htmlFor='tx-recipient'>Recipient: </label>
+            <label htmlFor='trx-recipient'>Recipient: </label>
             <input
               type='text'
-              id='tx-recipient'
+              id='trx-recipient'
               name='recipient'
-              value={tx?.recipient || ''}
+              value={trx?.recipient || ''}
               onChange={handleChange}
               autoComplete='off'
             ></input>
           </div>
           <div className='form-control'>
-            <label htmlFor='tx-amount'>Amount: </label>
+            <label htmlFor='trx-amount'>Amount: </label>
             <input
-              id='tx-amount'
+              id='trx-amount'
               name='amount'
               type='number'
-              value={tx?.amount || ''}
+              value={trx?.amount || ''}
               onChange={handleChange}
               autoComplete='off'
             ></input>
@@ -131,7 +134,7 @@ export const Transaction = () => {
           </div>
         </form>
         <section className='receipt-wrapper'>
-          {txReceipt && (
+          {trxReceipt && (
             <>
               <h2>Transaction receipt</h2>
               <div className='receipt'>
@@ -140,14 +143,15 @@ export const Transaction = () => {
                   <IconSquareChevronRight /> Transaction added to queue:
                 </h3>
                 <div className='receipt-multi'>
-                  {formatOutputMap(txReceipt.outputMap)}
+                  {formatOutputMap(trxReceipt.outputMap)}
                 </div>
                 <br />
                 <div className='receipt-single'>
-                  Transaction id: {txReceipt.id}
+                  Transaction id: {trxReceipt.id}
                 </div>
                 <div className='receipt-single'>
-                  Time and date: {formatTimestamp(txReceipt.inputMap.timestamp)}
+                  Time and date:{' '}
+                  {formatTimestamp(trxReceipt.inputMap.timestamp)}
                 </div>
               </div>
             </>

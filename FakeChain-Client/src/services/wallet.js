@@ -3,7 +3,12 @@ import axios from 'axios';
 export const listTransactions = async () => {
   try {
     const response = await axios.get(
-      'http://localhost:5001/api/v1/wallet/transactions'
+      'http://localhost:5001/api/v1/wallet/transactions',
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
     );
     return response.payload;
   } catch (error) {
@@ -47,7 +52,12 @@ export const mine = async (token) => {
 export const calculateBalance = async () => {
   try {
     const response = await axios.get(
-      'http://localhost:5001/api/v1/wallet/info'
+      'http://localhost:5001/api/v1/wallet/info',
+      {
+        headers: {
+          authorization: `Bearer ${token}`,
+        },
+      }
     );
     return response.payload;
   } catch (error) {

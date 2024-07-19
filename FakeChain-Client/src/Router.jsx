@@ -21,7 +21,7 @@ export const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: '/fakechain/transact',
+        path: '/fakechain/transaction',
         element: <Transaction />,
       },
       {

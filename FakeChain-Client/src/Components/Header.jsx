@@ -60,7 +60,7 @@ export const Header = () => {
         </div>
         <div className='user-wrapper'>
           <div>
-            <select></select>
+            <select id='checkbox'></select>
           </div>
           {!userInfo ? (
             <button onClick={handleClickLogin}>Log in / Sign up</button>

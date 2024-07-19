@@ -34,9 +34,9 @@ export const aboutMe = async (token) => {
         },
       }
     );
-    return response.payload.payload;
+    return response.data.data;
   } catch (error) {
-    return error.response.payload;
+    return error.response.data;
   }
 };
 

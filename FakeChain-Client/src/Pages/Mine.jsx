@@ -11,7 +11,7 @@ import { Popup } from '../Components/Popup';
 
 export const Mine = () => {
   const [newBlock, setNewBlock] = useState(null);
-  const [pendingTx, setpendingTx] = useState(null);
+  const [pendingTrx, setPendingTrx] = useState(null);
   const [displayPopup, setDisplayPopup] = useState('');
   const [loading, setLoading] = useState(false);
 
@@ -20,7 +20,7 @@ export const Mine = () => {
       try {
         const response = await listTransactions();
         if (response.statusCode === 200) {
-          setpendingTx(Object.values(response.payload)[0]);
+          setPendingTrx(Object.values(response.payload)[0]);
         } else {
           return setDisplayPopup({ title: 'Error', text: response.error });
         }
@@ -60,7 +60,7 @@ export const Mine = () => {
 
   const formatPending = (payload) => {
     if (payload) {
-      const senderAddress = pendingTx.inputMap.address;
+      const senderAddress = pendingTrx.inputMap.address;
       const senderValue = payload[senderAddress];
       const formattedData = Object.entries(payload);
       const filteredData = formattedData.filter(
@@ -88,18 +88,20 @@ export const Mine = () => {
   };
 
   const formatLatest = (payload) => {
-    return payload.map((tx, txIndex) => (
-      <React.Fragment key={txIndex}>
+    return payload.map((trx, trxIndex) => (
+      <React.Fragment key={trxIndex}>
         <>
-          <div className='latest-value'>Batch {txIndex === 0 ? 'A' : 'B'}:</div>
+          <div className='latest-value'>
+            Batch {trxIndex === 0 ? 'A' : 'B'}:
+          </div>
         </>
         <div className='latest-value'>
-          Sender: {shortenKey(tx.inputMap.address)}
+          Sender: {shortenKey(trx.inputMap.address)}
         </div>
 
         <>
-          {Object.entries(tx.outputMap).map(([address, value], index) => {
-            const senderAddress = tx.inputMap.address;
+          {Object.entries(trx.outputMap).map(([address, value], index) => {
+            const senderAddress = trx.inputMap.address;
             if (address !== senderAddress) {
               return (
                 <div
@@ -132,7 +134,7 @@ export const Mine = () => {
         </section>
 
         <section className='pending-transactions'>
-          {pendingTx && (
+          {pendingTrx && (
             <>
               <h2>Pending transactions</h2>
               <div className='pending'>
@@ -141,14 +143,14 @@ export const Mine = () => {
                   <IconRotateDot /> Transaction pool:
                 </h3>
                 <div className='pending-multi'>
-                  {formatPending(pendingTx.outputMap)}
+                  {formatPending(pendingTrx.outputMap)}
                 </div>
                 <br />
                 <div className='pending-single'>
-                  Transaction id: {pendingTx.id}
+                  Transaction id: {pendingTrx.id}
                 </div>
                 <div className='pending-single'>
-                  Timestamp: {formatTimestamp(pendingTx.inputMap.timestamp)}
+                  Timestamp: {formatTimestamp(pendingTrx.inputMap.timestamp)}
                 </div>
               </div>
             </>

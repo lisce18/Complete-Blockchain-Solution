@@ -1,5 +1,4 @@
 import { IconBrandGithub, IconBrandLinkedin } from '@tabler/icons-react';
-import { API_URL } from '../services/config';
 
 export const Footer = () => {
   return (

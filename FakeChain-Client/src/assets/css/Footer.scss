@@ -1,0 +1,32 @@
+footer {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.link-wrapper {
+  margin-left: 1rem;
+  width: 10dvw;
+}
+
+footer div {
+  font-size: 1.5rem;
+  width: 7rem;
+}
+
+@media screen and (max-height: 550px) {
+  footer {
+    height: 4rem;
+  }
+
+  footer div {
+    font-size: 1rem;
+  }
+}
+
+// @media screen and (max-width: 650px) {
+//   footer div {
+//     width: 7rem;
+//   }
+// }
