@@ -1,24 +1,57 @@
-import BlockchainModel from './models/BlockchainModel.mjs';
-import BlockModel from './models/BlockModel.mjs';
 import PubNub from 'pubnub';
-import { connectMongo } from './config/mongo.mjs';
+import dotenv from 'dotenv';
+import path from 'path';
+
+dotenv.config({ path: './config/config.env' });
 
 const CHANNELS = {
-  DEMO: 'DEMO',
+  TEST: 'TEST',
   BLOCKCHAIN: 'BLOCKCHAIN',
-  TRANSACTION: 'TRANSACTION',
+  NODES: 'NODES',
 };
 
-export default class PubNubServer {
-  constructor({ blockchain, transactionPool, wallet, credentials }) {
+const credentials = {
+  publishKey: process.env.PUBLISH_KEY,
+  subscribeKey: process.env.SUBSCRIBE_KEY,
+  secretKey: process.env.SECRET_KEY,
+  userId: 'fake-chain',
+};
+
+class PubNubServer {
+  constructor({ blockchain, PORT }) {
     this.blockchain = blockchain;
-    this.transactionPool = transactionPool;
-    this.wallet = wallet;
+    this.PORT = PORT;
     this.pubnub = new PubNub(credentials);
     this.pubnub.subscribe({ channels: Object.values(CHANNELS) });
     this.pubnub.addListener(this.listener());
+    this.nodes = [];
+
+    setTimeout(() => {
+      this.broadcastNodes();
+      this.broadcast();
+    }, 1000);
   }
 
+  addNode(node) {
+    const exists = this.nodes.find((n) => n.address === node.address);
+    if (!exists) {
+      this.nodes.push(node);
+      console.log(`Added new node: ${node.address}`);
+    } else {
+      console.log(`Node ${node.address} already exists`);
+    }
+  }
+
+  broadcastNodes() {
+    const portMessage = { address: this.PORT };
+    this.pubnub
+      .publish({
+        channel: CHANNELS.NODES,
+        message: JSON.stringify(portMessage),
+      })
+      .then(() => console.log('Successfully broadcasted node:', portMessage))
+      .catch((err) => console.error(`Failed to publish data, error: ${err}`));
+  }
   broadcast() {
     this.publish({
       channel: CHANNELS.BLOCKCHAIN,
@@ -26,10 +59,14 @@ export default class PubNubServer {
     });
   }
 
-  broadcastTransaction(transaction) {
+  getNodes() {
+    return this.nodes;
+  }
+
+  broadcast() {
     this.publish({
-      channel: CHANNELS.TRANSACTION,
-      message: JSON.stringify(transaction),
+      channel: CHANNELS.BLOCKCHAIN,
+      message: JSON.stringify(this.blockchain.chain),
     });
   }
 
@@ -45,7 +82,7 @@ export default class PubNubServer {
 
         switch (channel) {
           case CHANNELS.BLOCKCHAIN:
-            this.blockchain.replaceChain(msg, true, () => {
+            this.blockchain.replaceChain(msg, () => {
               this.transactionPool.clearBlockTransactions({ chain: msg });
             });
             break;
@@ -65,7 +102,23 @@ export default class PubNubServer {
     };
   }
 
+  handleMsg(msgObj) {
+    const { channel, message } = msgObj;
+    const parsedMessage = JSON.parse(message);
+
+    console.log(`Received message on channel ${channel}:`, parsedMessage);
+
+    if (channel === CHANNELS.BLOCKCHAIN) {
+      this.blockchain.updateChain(parsedMessage);
+      console.log('Blockchain updated with received data');
+    } else if (channel === CHANNELS.NODES) {
+      this.addNode(parsedMessage);
+    }
+  }
+
   publish({ channel, message }) {
     this.pubnub.publish({ channel, message });
   }
 }
+
+export default PubNubServer;

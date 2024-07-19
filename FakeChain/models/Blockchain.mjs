@@ -1,88 +1,133 @@
-import { createHash } from '../utilities/crypto-lib.mjs';
-import { MINING_REWARD, REWARD_ADDRESS } from '../config/settings.mjs';
-import Block from './Block.mjs';
 import Transaction from './Transaction.mjs';
+import Block from '../models/Block.mjs';
+import BlockchainModel from '../models/BlockchainModel.mjs';
+import { MINING_REWARD, REWARD_ADDRESS } from '../config/settings.mjs';
+import { createHash } from '../utilities/crypto-lib.mjs';
+import { GENESIS_BLOCK } from '../config/settings.mjs';
 
 export default class Blockchain {
   constructor() {
-    this.chain = [Block.createGenesis()];
+    this.chain = [GENESIS_BLOCK];
+    this.pendingTransactions = [];
+    this.loadBlockchain();
   }
 
-  async createNewBlock({ payload }) {
-    const newBlock = Block.mineBlock({
-      lastBlock: this.chain.at(-1),
-      payload,
+  async loadBlockchain() {
+    try {
+      const blockchain = await BlockchainModel.findOne();
+      if (blockchain) {
+        this.chain = blockchain.chain;
+        this.pendingTransactions = blockchain.pendingTransactions;
+      } else {
+        await this.saveBlockchain();
+      }
+    } catch (error) {
+      console.error('Failed to load blockchain from MongoDB:', error);
+    }
+  }
+
+  async saveBlockchain() {
+    try {
+      let blockchain = await BlockchainModel.findOne();
+      if (blockchain) {
+        blockchain.chain = this.chain;
+        blockchain.pendingTransactions = this.pendingTransactions;
+      } else {
+        blockchain = new BlockchainModel({
+          chain: this.chain,
+          pendingTransactions: this.pendingTransactions,
+        });
+      }
+      await blockchain.save();
+    } catch (error) {
+      console.error('Failed to save blockchain to MongoDB:', error);
+    }
+  }
+
+  async addNewBlock() {
+    const lastBlock = this.getLastBlock();
+    const timestamp = Date.now();
+    const lastHash = lastBlock.hash;
+    const index = lastBlock.index + 1;
+    const payload = [...this.pendingTransactions];
+
+    const rewardTransaction = new Transaction({
+      amount: MINING_REWARD,
+      sender: 'system',
+      recipient: REWARD_ADDRESS,
     });
+    payload.push(rewardTransaction);
+
+    const newBlock = new Block({
+      index,
+      lastHash,
+      payload,
+      timestamp,
+      hash: createHash(this.index, this.lastHash, this.payload, this.timestamp),
+    });
+
     this.chain.push(newBlock);
+    this.pendingTransactions = [];
+
+    await this.saveBlockchain();
+
     return newBlock;
   }
 
-  replaceChain(chain, shouldValidate, success) {
-    if (chain.length <= this.chain.length) return;
-
-    if (!Blockchain.chainIsValid(chain)) return;
-
-    if (shouldValidate && !this.validateTransactionPayload({ chain })) return;
-
-    if (success) success();
-
-    this.chain = chain;
+  getLastBlock() {
+    return this.chain[this.chain.length - 1];
   }
 
-  validateTransactionPayload({ chain }) {
-    for (let i = 1; i < chain.length; i++) {
-      const block = chain[i];
-      const transactionSet = new Set();
-      let counter = 0;
+  initTrx(details) {
+    return new Transaction(details);
+  }
 
-      for (let transaction of block.payload) {
-        if (transaction.inputMap.address === REWARD_ADDRESS.address) {
-          counter++;
+  addNewTrx(transaction) {
+    this.pendingTransactions.push(transaction);
+    return this.getLastBlock().index + 1;
+  }
 
-          if (counter > 1) return false;
+  listAllTrx() {
+    return this.chain.flatMap((block) => block.payload);
+  }
 
-          if (Object.values(transaction.outputMap)[0] !== MINING_REWARD)
-            return false;
-        } else {
-          if (!Transaction.validate(transaction)) {
-            return false;
-          }
-
-          if (transactionSet.has(transaction)) {
-            return false;
-          } else {
-            transactionSet.add(transaction);
-          }
-        }
-      }
+  async updateChain(newChain) {
+    if (
+      newChain.length <= this.chain.length ||
+      !Blockchain.isChainValid(newChain)
+    ) {
+      return;
     }
 
-    return true;
+    this.chain = newChain;
+    await this.saveBlockchain();
   }
 
-  static chainIsValid(chain) {
-    if (JSON.stringify(chain.at(0)) !== JSON.stringify(Block.createGenesis())) {
+  static isChainValid(newChain) {
+    if (
+      newChain.length === 0 ||
+      JSON.stringify(newChain[0]) !== JSON.stringify(GENESIS_BLOCK)
+    ) {
       return false;
     }
 
-    for (let i = 1; i < chain.length; i++) {
-      const { timestamp, lastHash, hash, payload, nonce, difficulty } =
-        chain.at(i);
+    for (let i = 1; i < newChain.length; i++) {
+      const { index, lastHash, timestamp, hash, payload } = newChain[i];
+      const newChainLastHash = newChain[i - 1].hash;
 
-      const currentLastHash = chain[i - 1].hash;
-      const lastDifficulty = chain[i - 1].difficulty;
+      if (lastHash !== newChainLastHash) {
+        return false;
+      }
 
-      if (lastHash !== currentLastHash) return false;
-
-      if (Math.abs(lastDifficulty - difficulty) > 1) return false;
-
-      const stringToHash = timestamp
-        .toString()
-        .concat(lastHash, JSON.stringify(payload), nonce, difficulty);
-
-      const validHash = createHash(stringToHash);
-
-      if (hash !== validHash) return false;
+      const validatedHash = createHash(
+        index,
+        lastHash,
+        timestamp.toString(),
+        JSON.stringify(payload)
+      );
+      if (hash !== validatedHash) {
+        return false;
+      }
     }
 
     return true;

@@ -29,7 +29,7 @@ export const login = asyncHandler(async (req, res, next) => {
     return next(new ErrorResponse('Incorrect log in', 401));
   }
 
-  const isCorrect = await user.validatePassword(password);
+  const isCorrect = await user.comparePassword(password);
 
   if (!isCorrect) {
     return next(new ErrorResponse('Incorrect log in', 401));
@@ -121,26 +121,6 @@ export const forgotPassword = asyncHandler(async (req, res, next) => {
     statusCode: 201,
     payload: { token: resetToken, url: resetUrl },
   });
-});
-
-// @desc    Återställ lösenord
-// @route   PUT /api/v1/auth/resetpassword/:token
-// @access  PUBLIC
-export const resetPassword = asyncHandler(async (req, res, next) => {
-  const password = req.body.password;
-  const token = req.params.token;
-
-  if (!password) return next(new ErrorResponse('Password is missing ,400'));
-
-  let user = await User.findOne({ resetPasswordToken: token });
-
-  user.password = password;
-  user.resetPasswordToken = undefined;
-  user.resetPasswordTokenExpire = undefined;
-
-  await user.save();
-
-  createAndSendToken(user, 200, res);
 });
 
 const createAndSendToken = (user, statusCode, res) => {
