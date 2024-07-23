@@ -1,12 +1,13 @@
+import React from 'react';
 import { NavLink } from 'react-router-dom';
 
-export const Navbar = () => {
+function Navbar() {
   return (
     <nav className='navbar'>
       <ul>
         <li>
           <NavLink
-            to={'/fakechain/home'}
+            to='/'
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
             Home
@@ -14,29 +15,31 @@ export const Navbar = () => {
         </li>
         <li>
           <NavLink
-            to={'/fakechain/transaction'}
+            to='/register'
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            Transaction
+            Register
           </NavLink>
         </li>
         <li>
           <NavLink
-            to={'/fakechain/mine'}
+            to='/login'
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            Mine
+            Login
           </NavLink>
         </li>
         <li>
           <NavLink
-            to={'/fakechain/explorer'}
+            to='/blockchain'
             className={({ isActive }) => (isActive ? 'active' : '')}
           >
-            Explorer
+            Blockchain
           </NavLink>
         </li>
       </ul>
     </nav>
   );
-};
+}
+
+export default Navbar;

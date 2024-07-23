@@ -1,5 +1,5 @@
 export const INITIAL_BALANCE = 1000;
-export const REWARD_ADDRESS = { address: 'reward-address' };
+export const REWARD_ADDRESS = 'reward-address';
 export const MINING_REWARD = 25;
 export const GENESIS_BLOCK = {
   timestamp: 1,

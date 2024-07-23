@@ -14,7 +14,7 @@ const transactionSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  trxId: {
+  transactionId: {
     type: String,
     required: true,
     unique: true,
@@ -35,10 +35,10 @@ export default class Transaction {
     this.amount = details.amount;
     this.sender = details.sender;
     this.recipient = details.recipient;
-    this.trxId = this.generateTrxId();
+    this.transactionId = this.generateTransactionId();
   }
 
-  generateTrxId() {
+  generateTransactionId() {
     return uuid().replaceAll('-', '');
   }
 
@@ -47,7 +47,7 @@ export default class Transaction {
       amount: this.amount,
       sender: this.sender,
       recipient: this.recipient,
-      trxId: this.trxId,
+      transactionId: this.transactionId,
     });
 
     try {

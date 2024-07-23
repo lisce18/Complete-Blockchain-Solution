@@ -1,6 +1,5 @@
 import PubNub from 'pubnub';
 import dotenv from 'dotenv';
-import path from 'path';
 
 dotenv.config({ path: './config/config.env' });
 
@@ -77,7 +76,7 @@ class PubNubServer {
         const msg = JSON.parse(message);
 
         console.log(
-          `Meddelande mottagits på kanal: ${channel}, meddelande: ${message}`
+          `Message recieved on channel: ${channel}, message: ${message}`
         );
 
         switch (channel) {
@@ -94,6 +93,9 @@ class PubNubServer {
             ) {
               this.transactionPool.addTransaction(msg);
             }
+            break;
+          case CHANNELS.NODES:
+            this.addNode(msg);
             break;
           default:
             return;

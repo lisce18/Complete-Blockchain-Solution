@@ -1,8 +1,29 @@
 @import './assets/css/reset.scss';
-@import './assets/css/Layout.scss';
 
 @import './assets/css/Header.scss';
 @import './assets/css/Footer.scss';
 
+@import './assets/css/Blockchain.scss';
 @import './assets/css/login.scss';
 @import './assets/css/home.scss';
+@import './assets/css/register.scss';
+
+html,
+body {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  max-width: 100dvw;
+  background-image: linear-gradient(
+    to right,
+    #655bf3 0%,
+    #ced9fe 13%,
+    #ced9fe 87%,
+    #655bf3 100%
+  );
+}

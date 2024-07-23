@@ -1,7 +1,49 @@
-.home-wrapper {
+.main-container {
   align-items: center;
   display: flex;
   flex-direction: column;
+  height: 75dvh;
   justify-content: center;
   width: 100dvw;
+}
+
+.page-title {
+  font-size: 5rem;
+  margin-bottom: 1rem;
+  text-align: center;
+  width: 60dvw;
+}
+
+.info-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 60dvw;
+}
+
+.info {
+  font-size: 2rem;
+  text-align: center;
+}
+
+.btn-container {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  width: 60dvw;
+}
+
+.logout-btn,
+.login-btn,
+.register-btn {
+  background-color: #655bf3;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  cursor: pointer;
+  font-size: 2rem;
+  margin: 2rem;
+  padding: 1rem;
+  align-self: center;
 }

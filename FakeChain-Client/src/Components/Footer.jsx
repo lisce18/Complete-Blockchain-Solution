@@ -1,3 +1,4 @@
+import React from 'react';
 import { IconBrandGithub, IconBrandLinkedin } from '@tabler/icons-react';
 
 export const Footer = () => {

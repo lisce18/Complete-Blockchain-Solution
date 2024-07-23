@@ -4,7 +4,7 @@ const transactionSchema = new mongoose.Schema({
   amount: Number,
   sender: String,
   recipient: String,
-  trxId: String,
+  transactionId: String,
 });
 
 const blockSchema = new mongoose.Schema({

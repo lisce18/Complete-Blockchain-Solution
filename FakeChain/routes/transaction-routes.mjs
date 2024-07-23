@@ -1,15 +1,14 @@
 import express from 'express';
 import {
-  createTrx,
-  getAllTrx,
-  getTrxById,
+  createTransaction,
+  getAllTransaction,
+  getTransactionById,
 } from '../controllers/transaction-controller.mjs';
-import { protect } from '../middlewear/authorization.mjs';
 
 const router = express.Router();
 
-router.get('/', protect, getAllTrx);
-router.get('/:trxId', protect, getTrxById);
-router.post('/transaction', protect, createTrx);
+router.get('/', getAllTransaction);
+router.get('/:transactionId', getTransactionById);
+router.post('/transaction', createTransaction);
 
 export default router;

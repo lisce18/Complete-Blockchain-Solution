@@ -6,14 +6,13 @@ import {
   getLastBlock,
   listBlocks,
 } from '../controllers/blockchain-controller.mjs';
-import { protect } from '../middlewear/authorization.mjs';
 
 const router = express.Router();
 
-router.get('/', protect, listBlocks);
-router.get('/:index', protect, getBlock);
-router.get('/last', protect, getLastBlock);
-router.get('/balance/:address', protect, getBalance);
-router.post('/mine', protect, addBlock);
+router.get('/', listBlocks);
+router.get('/:index', getBlock);
+router.get('/last', getLastBlock);
+router.get('/balance/:address', getBalance);
+router.post('/mine', addBlock);
 
 export default router;

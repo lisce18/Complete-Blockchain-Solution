@@ -1,5 +1,4 @@
 import { blockchain, pubnub } from '../server.mjs';
-import { MINING_REWARD, REWARD_ADDRESS } from '../config/settings.mjs';
 
 // @desc Add a new block to the chain
 // @route POST api/v1/blockchain/mine
@@ -11,13 +10,6 @@ export const addBlock = (req, res) => {
     }
 
     const transactionsToMine = blockchain.pendingTransactions;
-    const rewardTransaction = {
-      sender: 'REWARD',
-      recipient: req.body.rewardAddress || REWARD_ADDRESS,
-      amount: MINING_REWARD,
-    };
-
-    transactionsToMine.push(rewardTransaction);
 
     const newBlock = blockchain.addNewBlock(transactionsToMine);
 
@@ -48,7 +40,7 @@ export const getBlock = (req, res) => {
 
 // @desc List the entire chain
 // @route GET api/v1/blockchain
-// access PRIVATE
+// access PUBLIC
 export const listBlocks = (req, res) => {
   try {
     res.status(200).json({

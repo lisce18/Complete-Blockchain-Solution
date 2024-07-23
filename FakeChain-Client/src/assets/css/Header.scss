@@ -1,9 +1,12 @@
 header {
-  background-color: bisque;
+  background-color: #655bf3;
   display: flex;
   flex-direction: column;
-  width: 100dvw;
+  width: 100%;
+  height: 15dvh;
   padding-bottom: 1rem;
+  position: sticky;
+  top: 0;
 }
 
 @media screen and (max-height: 550px) {
@@ -18,6 +21,7 @@ header {
   flex-direction: row;
   justify-content: space-between;
   margin-top: 1rem;
+  margin-left: 10rem;
   width: 95dvw;
 }
 
@@ -25,20 +29,28 @@ header {
   align-items: center;
   display: flex;
   flex-direction: row-reverse;
+  width: 6rem;
 }
 
-.user-wrapper {
-  align-items: center;
-  display: flex;
-  flex-direction: row;
+.title {
+  font-size: 2rem;
+}
+
+.logo svg {
+  width: 3rem;
+  height: 3rem;
 }
 
 .navbar {
+  position: absolute;
   background-color: aquamarine;
   display: flex;
   justify-content: center;
+  align-items: center;
   margin-top: 1rem;
-  width: 100dvw;
+  width: 100%;
+  height: 3rem;
+  bottom: 0;
 }
 
 .navbar ul {
@@ -55,4 +67,6 @@ header {
   display: flex;
   justify-content: center;
   padding: 10px;
+  font-size: 1.4rem;
+  font-weight: bold;
 }

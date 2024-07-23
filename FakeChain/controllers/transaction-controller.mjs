@@ -1,14 +1,14 @@
 import Transaction from '../models/Transaction.mjs';
-import BlockchainModel from '../models/BlockchainModel.mjs';
 import { blockchain } from '../server.mjs';
 import mongoose from 'mongoose';
+import { asyncHandler } from '../middleware/asyncHandler.mjs';
 
 const TransactionModel = mongoose.model('Transaction');
 
 // // @desc Make a new transaction
 // // @route POST api/v1/wallet/transaction
 // // access PRIVATE
-export const createTrx = async (req, res, next) => {
+export const createTransaction = asyncHandler(async (req, res, next) => {
   const { amount, sender, recipient } = req.body;
 
   if (!amount || !sender || !recipient) {
@@ -18,27 +18,25 @@ export const createTrx = async (req, res, next) => {
   }
 
   try {
-    const newTrx = new Transaction({ amount, sender, recipient });
-    await newTrx.save();
+    const newTransaction = new Transaction({ amount, sender, recipient });
+    await newTransaction.save();
 
-    // await addTransactionToPending(newTrx);
+    blockchain.addNewTransaction(newTransaction);
 
-    blockchain.addNewTrx(newTrx);
-
-    res.status(201).json(newTrx);
+    res.status(201).json(newTransaction);
   } catch (error) {
     next(error);
   }
-};
+});
 
 // // @desc List transaction by id
-// // @route GET api/v1/wallet/transaction/:trxId
+// // @route GET api/v1/wallet/transaction/:transactionId
 // // access PRIVATE
-export const getTrxById = async (req, res, next) => {
-  const { trxId } = req.params;
+export const getTransactionById = asyncHandler(async (req, res, next) => {
+  const { transactionId } = req.params;
 
   try {
-    const transaction = await TransactionModel.findOne({ trxId });
+    const transaction = await TransactionModel.findOne({ transactionId });
 
     if (!transaction) {
       return res.status(404).json({ error: 'Transaction not found' });
@@ -49,12 +47,12 @@ export const getTrxById = async (req, res, next) => {
     console.error('Error fetching transaction:', error);
     next(error);
   }
-};
+});
 
 // // @desc List all transactions made
 // // @route GET api/v1/wallet/transactions
 // // access PRIVATE
-export const getAllTrx = async (req, res, next) => {
+export const getAllTransaction = asyncHandler(async (req, res, next) => {
   try {
     const transactions = await TransactionModel.find();
     res.status(200).json(transactions);
@@ -62,4 +60,4 @@ export const getAllTrx = async (req, res, next) => {
     console.error('Error fetching transactions:', error);
     next(error);
   }
-};
+});

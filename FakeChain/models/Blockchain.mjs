@@ -78,16 +78,16 @@ export default class Blockchain {
     return this.chain[this.chain.length - 1];
   }
 
-  initTrx(details) {
+  initTransactions(details) {
     return new Transaction(details);
   }
 
-  addNewTrx(transaction) {
+  addNewTransaction(transaction) {
     this.pendingTransactions.push(transaction);
     return this.getLastBlock().index + 1;
   }
 
-  listAllTrx() {
+  listAllTransactions() {
     return this.chain.flatMap((block) => block.payload);
   }
 

@@ -1,0 +1,68 @@
+// /* General design */
+// .main-container {
+//   display: flex;
+//   flex-direction: column;
+//   padding-top: 2rem;
+//   padding-bottom: 2rem;
+//   align-items: center;
+//   justify-self: center;
+//   align-self: center;
+//   width: 70dvw;
+//   background-color: #ced9fe;
+// }
+
+/* Select Node */
+.dropdown-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 20px;
+  width: 30dvw;
+  height: 5dvh;
+  justify-content: space-between;
+  margin: 1.5rem;
+}
+
+.dropdown {
+  border: 1px solid black;
+  border-radius: 25px;
+  width: 12dvw;
+  text-align: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.node {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Search Transaction */
+.search-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-top: 20px;
+  width: 20dvw;
+  height: 5dvh;
+  justify-content: space-between;
+  margin: 1.5rem;
+}
+
+/* Pending Transactions */
+
+/* Blockchain */
+.chain {
+  display: flex;
+  flex-direction: column;
+  column-count: 3;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.transaction-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}

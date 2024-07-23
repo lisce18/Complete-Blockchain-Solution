@@ -12,11 +12,11 @@ export const initSecurity = (app) => {
 
   app.use(hpp());
 
-  const limit = rateLimit({
-    windowsMs: 15 * 60 * 1000,
-    max: 100,
-  });
-  app.use(limit);
+  // const limit = rateLimit({
+  //   windowsMs: 15 * 60 * 1000,
+  //   max: 100,
+  // });
+  // app.use(limit);
 
   app.use(mongoSanitize());
 
