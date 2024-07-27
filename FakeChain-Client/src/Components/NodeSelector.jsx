@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 
-const NodeSelector = ({ nodes, setDynamicPort }) => {
+const NodeSelector = ({ nodes, setAvailablePort }) => {
   const [selectedNode, setSelectedNode] = useState('');
 
   const changeNode = (e) => {
     const nodeNumber = e.target.value;
     setSelectedNode(nodeNumber);
-    setDynamicPort(nodeNumber);
+    setAvailablePort(nodeNumber);
   };
 
   return (

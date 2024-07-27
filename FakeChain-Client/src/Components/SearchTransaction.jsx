@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 
-const getTrxById = async (trxId, dynamicPort) => {
+const getTransactionById = async (transactionId, availablePort) => {
   try {
     const response = await fetch(
-      `http://localhost:${dynamicPort}/api/v1/transactions/${trxId}`
+      `http://localhost:${availablePort}/api/v1/wallet/${transactionId}`
     );
     if (!response.ok) {
       throw new Error('Network response was not ok');
@@ -16,7 +16,7 @@ const getTrxById = async (trxId, dynamicPort) => {
   }
 };
 
-const SearchTransaction = ({ dynamicPort }) => {
+const SearchTransaction = ({ availablePort }) => {
   const [searchId, setSearchId] = useState('');
   const [blockPayload, setBlockPayload] = useState(null);
 
@@ -25,38 +25,62 @@ const SearchTransaction = ({ dynamicPort }) => {
   };
 
   const handleSearch = async (searchId) => {
-    const payload = await getTrxById(searchId, dynamicPort);
+    const payload = await getTransactionById(searchId, availablePort);
     setBlockPayload(payload);
   };
 
+  const capitalizeFirstLetter = (string) => {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  };
+
+  const renderBlockPayload = (blockPayload) => {
+    if (typeof blockPayload !== 'object' || blockPayload === null) {
+      return <div>Invalid payload</div>;
+    }
+
+    return (
+      <div>
+        {Object.entries(blockPayload).map(([key, value]) => (
+          <div
+            key={key}
+            style={{ marginBottom: '10px' }}
+          >
+            <strong>{capitalizeFirstLetter(key)}:</strong>{' '}
+            {JSON.stringify(value, null, 2)}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
-    <div>
+    <div className='search-trx-container'>
+      <h3 className='search-title'>Search for transaction by id:</h3>
       <form
+        className='search-trx-form'
         onSubmit={(e) => {
           e.preventDefault();
           handleSearch(searchId);
         }}
-        className='search-container'
       >
         <input
           type='text'
           placeholder='Input a transaction id..'
           value={searchId}
           onChange={handleInputChange}
-          className='search-input'
         />
 
         <button
-          className='submit-button'
+          className='submit-btn'
           type='submit'
         >
           Search
         </button>
       </form>
       {blockPayload && (
-        <div>
-          <h2>Block Details</h2>
-          <pre>{JSON.stringify(blockPayload, null, 2)}</pre>
+        <div className='transaction-details'>
+          <h2>Transaction Details</h2>
+          <div>{renderBlockPayload(blockPayload)}</div>
         </div>
       )}
     </div>

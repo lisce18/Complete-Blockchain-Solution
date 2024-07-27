@@ -1,3 +1,5 @@
+import Transaction from '../models/Transaction.mjs';
+
 export const INITIAL_BALANCE = 1000;
 export const REWARD_ADDRESS = 'reward-address';
 export const MINING_REWARD = 25;
@@ -11,6 +13,7 @@ export const GENESIS_BLOCK = {
       amount: 0,
       recipient: 'Genesis Block',
       sender: 'Genesis Block',
+      transactionId: Transaction.generateTransactionId,
     },
   ],
 };

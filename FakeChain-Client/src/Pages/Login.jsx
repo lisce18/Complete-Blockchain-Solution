@@ -22,12 +22,20 @@ export const Login = () => {
   };
 
   return (
-    <div className='block'>
-      <h2>Login</h2>
-      <form onSubmit={handleSubmit}>
+    <div className='main-container'>
+      <h2 className='page-title'>Login</h2>
+      <form
+        className='login-form'
+        onSubmit={handleSubmit}
+      >
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <div>
-          <label htmlFor='email'>Email: </label>
+        <div className='form-control'>
+          <label
+            className='input-title'
+            htmlFor='email'
+          >
+            Email:{' '}
+          </label>
           <input
             type='email'
             id='email'
@@ -37,8 +45,13 @@ export const Login = () => {
           />
         </div>
         <br />
-        <div>
-          <label htmlFor='password'>Password: </label>
+        <div className='form-control'>
+          <label
+            className='input-title'
+            htmlFor='password'
+          >
+            Password:{' '}
+          </label>
           <input
             type='password'
             id='password'
@@ -48,7 +61,12 @@ export const Login = () => {
           />
         </div>
         <br />
-        <button type='submit'>Login</button>
+        <button
+          className='submit-login'
+          type='submit'
+        >
+          Login
+        </button>
       </form>
     </div>
   );

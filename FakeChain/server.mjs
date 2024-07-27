@@ -10,6 +10,8 @@ import userRoutes from './routes/user-routes.mjs';
 import { initSecurity } from './utilities/initSecurity.mjs';
 import { fileURLToPath } from 'url';
 import path from 'path';
+import ErrorResponse from './models/ErrorResponseModel.mjs';
+import { errorHandler } from './middleware/errorHandler.mjs';
 
 dotenv.config({ path: './config/config.env' });
 
@@ -36,6 +38,12 @@ app.use('/api/v1/blockchain', blockchainRouter);
 app.use('/api/v1/wallet', transactionRouter);
 app.use('/api/v1/nodes', pubnubRouter);
 app.use('/api/v1/user', userRoutes);
+
+app.all('*', (req, res, next) => {
+  next(new ErrorResponse(`Route not found - ${req.originalUrl}`, 404));
+});
+
+app.use(errorHandler);
 
 if (process.env.GENERATE_NODE_PORT === 'true') {
   NODE_PORT = DEFAULT_PORT + Math.ceil(Math.random() * 1000);

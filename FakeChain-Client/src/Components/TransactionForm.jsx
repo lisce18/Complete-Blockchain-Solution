@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { makeTransaction } from '../services/fetchBlockchain';
 
-const TransactionForm = ({ getBlockchain, dynamicPort }) => {
+const TransactionForm = ({ getBlockchain, availablePort }) => {
   const [sender, setSender] = useState('');
   const [recipient, setRecipient] = useState('');
   const [amount, setAmount] = useState('');
@@ -15,62 +15,60 @@ const TransactionForm = ({ getBlockchain, dynamicPort }) => {
       amount: +amount,
     };
     try {
-      const result = await makeTransaction(transaction, dynamicPort);
+      const result = await makeTransaction(transaction, availablePort);
       setTransactionDetails(result);
-      getBlockchain(dynamicPort);
+      getBlockchain(availablePort);
+      window.alert('Transaction added successfully');
+      window.location.reload();
     } catch (err) {
       console.error(`Error adding transaction: ${err}`);
     }
   };
 
   return (
-    <div className='form-wrapper'>
-      <h3>Add a transaction</h3>
+    <div className='make-trx-container'>
+      <h3 className='make-trx-title'>Make a transaction</h3>
       <form
         className='trx-form'
         onSubmit={handleMakeTransaction}
       >
-        <label>
-          Sender:
+        <div className='form-control'>
+          <label className='input-title'>Sender:</label>
           <input
             type='text'
             value={sender}
-            placeholder='Type name here...'
+            placeholder='Name...'
             onChange={(e) => setSender(e.target.value)}
             required
           />
-        </label>
-        <label>
-          Recipient:
+        </div>
+        <div className='form-control'>
+          <label className='input-title'>Recipient:</label>
           <input
             type='text'
             value={recipient}
-            placeholder='Type name here...'
+            placeholder='Name...'
             onChange={(e) => setRecipient(e.target.value)}
             required
           />
-        </label>
-        <label>
-          Amount:
+        </div>
+        <div className='form-control'>
+          <label className='input-title'>Amount:</label>
           <input
             type='text'
             value={amount}
-            placeholder='Type amount here...'
+            placeholder='Amount...'
             onChange={(e) => setAmount(e.target.value)}
             required
           />
-        </label>
-        <button type='submit'>Make Transaction</button>
-      </form>
-      {/* {transactionDetails && (
-        <div className="transaction-details">
-          <h3>Transaction Details</h3>
-          <p>Transaction Id: {transactionDetails.txId}</p>
-          <p>Sender: {transactionDetails.sender}</p>
-          <p>Recipient: {transactionDetails.recipient}</p>
-          <p>Amount: {transactionDetails.amount}</p>
         </div>
-      )} */}
+        <button
+          className='send-btn'
+          type='submit'
+        >
+          Send Transaction
+        </button>
+      </form>
     </div>
   );
 };

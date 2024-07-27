@@ -14,7 +14,7 @@ export const Blockchain = () => {
   const [blockchain, setBlockchain] = useState({});
   const [blockchainList, setBlockchainList] = useState([]);
   const [pendingTransactions, setPendingTransactions] = useState([]);
-  const [dynamicPort, setDynamicPort] = useState('');
+  const [availablePort, setAvailablePort] = useState('');
   const [nodes, setNodes] = useState([]);
   const [loading, setLoading] = useState(false);
 
@@ -23,10 +23,10 @@ export const Blockchain = () => {
   }, [nodes]);
 
   useEffect(() => {
-    if (dynamicPort) {
-      fetchBlockchain(dynamicPort);
+    if (availablePort) {
+      fetchBlockchain(availablePort);
     }
-  }, [dynamicPort, loading]);
+  }, [availablePort, loading]);
 
   useEffect(() => {
     if (
@@ -34,7 +34,6 @@ export const Blockchain = () => {
       blockchain.payload &&
       Array.isArray(blockchain.payload.chain)
     ) {
-      console.log('Blockchain chain payload:', blockchain.payload.chain);
       setBlockchainList(blockchain.payload.chain);
       setPendingTransactions(blockchain.payload.pendingTransactions || []);
     }
@@ -46,7 +45,7 @@ export const Blockchain = () => {
       setNodes(fetchedNodes);
       if (fetchedNodes.length > 0) {
         const firstNodeAddress = fetchedNodes[0].address;
-        setDynamicPort(firstNodeAddress);
+        setAvailablePort(firstNodeAddress);
       }
     } catch (err) {
       console.error(`Error fetching nodes: ${err}`);
@@ -56,7 +55,6 @@ export const Blockchain = () => {
   const fetchBlockchain = async (port) => {
     try {
       const blockchainPayload = await getBlockchain(port);
-      console.log('Fetched blockchain payload:', blockchainPayload);
       setBlockchain(blockchainPayload);
     } catch (err) {
       console.error(`Error fetching blockchain: ${err}`);
@@ -66,7 +64,7 @@ export const Blockchain = () => {
   const handleMine = async () => {
     setLoading(true);
     try {
-      const result = await addBlockchain(dynamicPort);
+      const result = await addBlockchain(availablePort);
     } catch (err) {
       console.error('Error while mining:', err);
     } finally {
@@ -76,35 +74,49 @@ export const Blockchain = () => {
 
   return (
     <div className='main-container'>
-      <NodeSelector
-        className='dropdown'
-        nodes={nodes}
-        setDynamicPort={setDynamicPort}
-      />
-      <SearchTransaction dynamicPort={dynamicPort} />
-      <TransactionForm
-        getBlockchain={getBlockchain}
-        dynamicPort={dynamicPort}
-      />
-      {pendingTransactions.length > 0 ? (
-        <button
-          onClick={handleMine}
-          disabled={loading}
-        >
-          {loading ? 'Mining ...' : 'Mine pending transactions'}
-        </button>
-      ) : (
-        'No Pending Transactions'
-      )}
-      <div className='transactions-container'>
+      <div className='placement-1'>
+        <NodeSelector
+          className='dropdown'
+          nodes={nodes}
+          setAvailablePort={setAvailablePort}
+        />{' '}
+      </div>
+      <div className='placement-2'>
+        <div className='trx-search-container'>
+          <SearchTransaction
+            className='searchbar'
+            availablePort={availablePort}
+          />
+          <TransactionForm
+            getBlockchain={getBlockchain}
+            availablePort={availablePort}
+          />
+        </div>
+      </div>
+      <div className='placement-3'>
         {pendingTransactions.length > 0 ? (
-          <>
-            <h3 className='pending-header'>Pending Transactions</h3>
-            <ul className='pending-transactions'>
-              {displayPending(pendingTransactions)}
-            </ul>
-          </>
-        ) : null}
+          <button
+            onClick={handleMine}
+            disabled={loading}
+            className='mine-btn'
+          >
+            {loading ? 'Mining...' : 'Mine transactions'}
+          </button>
+        ) : (
+          <h4 className='no-pending'>
+            Make a new transaction before you can see pending...
+          </h4>
+        )}
+        <div className='pending-transactions-container'>
+          {pendingTransactions.length > 0 ? (
+            <>
+              <h3 className='pending-title'>Pending Transactions</h3>
+              <ul className='pending-transactions'>
+                {displayPending(pendingTransactions)}
+              </ul>
+            </>
+          ) : null}
+        </div>
         {blockchainList.length > 0 ? (
           <ul className='chain'>{displayBlockchain(blockchainList)}</ul>
         ) : (

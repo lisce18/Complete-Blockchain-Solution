@@ -1,83 +1,30 @@
-.login-wrapper {
+.main-container {
   align-items: center;
   display: flex;
   flex-direction: column;
   justify-content: center;
-
-  // background-color: rgb(215, 215, 183);
-  border: 2px solid black;
-  border-radius: 20px;
-
-  position: absolute;
-  left: 25dvw;
-  top: 25dvh;
-  height: 60dvh;
-  width: 40dvw;
+  width: 100dvw;
+  height: 75dvh;
 }
 
-.login-frame {
-  align-items: center;
+.login-form {
+  border: 2px solid black;
+  border-radius: 20px;
   display: flex;
-  flex-direction: column-reverse;
-  height: 60dvh;
+  flex-direction: column;
+  height: 40dvh;
   justify-content: center;
   width: 40dvw;
 }
 
-.exit-button {
+.submit-login {
+  align-self: center;
+  background-color: #655bf3;
+  border: none;
+  border-radius: 5px;
+  color: white;
   cursor: pointer;
-
-  border: 2px solid #000;
-  border-radius: 20px;
-  font-size: 2rem;
-  font-weight: bold;
-  height: 3rem;
-  width: 3rem;
-
-  text-align: center;
-  position: absolute;
-  left: 1rem;
-  top: 1rem;
-  margin-top: 0;
-}
-
-.sign-up-button-wrapper {
-  display: flex;
-  flex-direction: column;
-  position: absolute;
-  top: 1rem;
-}
-
-.sign-up-button-wrapper span {
-  cursor: default;
-  font-size: 1.2rem;
-}
-
-#signup-form .form-control label {
-  font-size: 1.2rem;
-  font-weight: bold;
-
-  margin-left: 0.8rem;
-  margin-right: 0.4rem;
-}
-
-.form-control {
-  font-size: 1.2rem;
-  width: 20rem;
-
-  margin-bottom: 0.25rem;
-  margin-top: 0.25rem;
-
-  // background-color: rgb(149, 149, 126);
-}
-
-.application-button {
-  border: 2px solid black;
-  border-radius: 20px;
-
-  font-size: 1.2rem;
-  text-align: center;
-
-  height: 2.2rem;
-  width: 4.4rem;
+  font-size: 1.5rem;
+  margin: 2rem;
+  padding: 1rem;
 }

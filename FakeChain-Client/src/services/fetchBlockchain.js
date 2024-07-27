@@ -20,8 +20,8 @@ const handleGet = async (url) => {
   }
 };
 
-const addBlockchain = async (dynamicPort) => {
-  const DYNAMIC_URL = `http://localhost:${dynamicPort}/api/v1/blockchain/mine`;
+const addBlockchain = async (availablePort) => {
+  const DYNAMIC_URL = `http://localhost:${availablePort}/api/v1/blockchain/mine`;
   try {
     const response = await fetch(DYNAMIC_URL, {
       method: 'POST',
@@ -34,8 +34,8 @@ const addBlockchain = async (dynamicPort) => {
   }
 };
 
-const getBlockchain = async (dynamicPort) => {
-  const DYNAMIC_URL = `http://localhost:${dynamicPort}/api/v1/blockchain`;
+const getBlockchain = async (availablePort) => {
+  const DYNAMIC_URL = `http://localhost:${availablePort}/api/v1/blockchain`;
   return handleGet(DYNAMIC_URL);
 };
 
@@ -50,8 +50,8 @@ const getNodes = async () => {
   }
 };
 
-const makeTransaction = async (trxPayload, dynamicPort) => {
-  const DYNAMIC_URL = `http://localhost:${dynamicPort}/api/v1/wallet/transaction`;
+const makeTransaction = async (trxPayload, availablePort) => {
+  const DYNAMIC_URL = `http://localhost:${availablePort}/api/v1/wallet/transaction`;
   try {
     const response = await fetch(DYNAMIC_URL, {
       method: 'POST',

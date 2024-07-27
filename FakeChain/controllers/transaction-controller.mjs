@@ -36,7 +36,9 @@ export const getTransactionById = asyncHandler(async (req, res, next) => {
   const { transactionId } = req.params;
 
   try {
-    const transaction = await TransactionModel.findOne({ transactionId });
+    const transaction = await TransactionModel.findOne({
+      transactionId,
+    }).select('-_id -__v');
 
     if (!transaction) {
       return res.status(404).json({ error: 'Transaction not found' });
